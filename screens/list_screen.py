@@ -5,6 +5,8 @@ from .helpers.colors import Palette
 from .helpers.glow_text import glow_text, glow_title
 from .helpers.ui_frame import draw_frame, draw_hline, draw_corner
 
+from .helpers.touch import TouchArea
+
 class ListScreen(BaseScreen):
 	def __init__(self, screen, manager, title, items):
 		super().__init__(screen)
@@ -15,13 +17,12 @@ class ListScreen(BaseScreen):
 		self.font_title = load_font(28)
 		self.font_text = load_font(20)
 
-	def handle_event(self, event):
-		if event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_ESCAPE:
-				self.manager.set("items")
+		full_rect = pygame.Rect(0, 0, screen.get_width(), screen.get_height())
+		self.back_button = TouchArea(full_rect, lambda: self.manager.set("items"), padding=0)
 
-		if event.type == pygame.MOUSEBUTTONDOWN:
-			self.manager.set("items")
+
+	def handle_event(self, event):
+		self.back_button.handle_event(event)
 
 	def render(self):
 		self.screen.fill(Palette.BG)

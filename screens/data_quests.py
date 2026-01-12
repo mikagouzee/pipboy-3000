@@ -26,7 +26,7 @@ class QuestsScreen(BaseScreen):
 
 	def handle_event(self, event):
 		if event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_ESCAPE:
+			if event.key == pygame.K_BACKSPACE:
 				self.manager.set("data")
 			if event.key == pygame.K_RETURN:
 				self.quests.append("New Quest")

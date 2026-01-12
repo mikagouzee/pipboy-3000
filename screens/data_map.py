@@ -3,6 +3,8 @@ from .base_screen import BaseScreen
 from .helpers.ui_frame import draw_frame, draw_hline, draw_corner
 from .helpers.colors import Palette
 
+from .helpers.touch import TouchArea
+
 class MapScreen(BaseScreen):
 	def __init__(self, screen, manager):
 		super().__init__(screen)
@@ -11,12 +13,18 @@ class MapScreen(BaseScreen):
 		# Load map image
 		self.map_img = pygame.image.load("assets/map.png").convert()
 
+		full_rect = pygame.Rect(0, 0, screen.get_width(), screen.get_height())
+		self.back_button = TouchArea(full_rect, self.go_back(), padding=0)
+
+	def go_back(self):
+		self.manager.set("data")
+
 	def handle_event(self, event):
 		if event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_ESCAPE:
-				self.manager.set("data")
-		if event.type == pygame.MOUSEBUTTONDOWN:
-			self.manager.set("data")
+			if event.key == pygame.K_BACKSPACE:
+				self.go_back()
+
+		self.back_button.handle_event(event)
 
 	def render(self):
 		self.screen.fill(Palette.BG)

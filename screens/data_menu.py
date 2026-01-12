@@ -5,6 +5,8 @@ from .helpers.glow_text import glow_text, glow_title
 from .helpers.colors import Palette
 from .helpers.ui_frame import draw_frame, draw_hline, draw_corner
 
+from .helpers.touch import TouchArea
+
 DATA_CATEGORIES = ["MAP", "MISC", "QUESTS", "RADIO"]
 
 class DataMenu(BaseScreen):
@@ -14,24 +16,37 @@ class DataMenu(BaseScreen):
 		self.font = load_font(26)
 		self.selected = 0
 
+		self.buttons = []
+		y = 120
+
+		for label in DATA_CATEGORIES:
+			rect = pygame.Rect(0, 0, 260, 40)
+			rect.center = (screen.get_width() // 2, y)
+
+			self.buttons.append(
+				TouchArea(rect, lambda l=label: self._select(l), padding=20)
+			)
+
+			y += 50
+
+	def _select(self, label):
+		self.selected = DATA_CATEGORIES.index(label)
+		self.open_selected()
+
 	def handle_event(self, event):
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_UP:
 				self.selected = (self.selected - 1) % len(DATA_CATEGORIES)
 			elif event.key == pygame.K_DOWN:
 				self.selected = (self.selected + 1) % len(DATA_CATEGORIES)
-			elif event.key == pygame.K_ESCAPE:
+			elif event.key == pygame.K_BACKSPACE:
 				self.manager.set("menu")
 			elif event.key == pygame.K_RETURN:
 				self.open_selected()
 
-		if event.type == pygame.MOUSEBUTTONDOWN:
-			x, y = event.pos
-			for i, label in enumerate(DATA_CATEGORIES):
-				item_y = 120 + i * 50
-				if abs(y - item_y) < 25:
-					self.selected = i
-					self.open_selected()
+		for btn in self.buttons:
+			btn.handle_event(event)
+
 
 	def open_selected(self):
 		name = DATA_CATEGORIES[self.selected].lower()
