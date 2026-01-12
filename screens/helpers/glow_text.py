@@ -2,12 +2,12 @@ import pygame
 from .colors import Palette
 
 def glow_text(text, font):
-	return render_glow_text(text, font, Palette.FG, Palette.TEXT, 2)
+	return render_glow_text(text, font, Palette.FG, Palette.TEXT, 1)
 
 def glow_title(text, font):
 	return render_glow_text(text, font, Palette.FG, Palette.TITLE)
 
-def render_glow_text(text, font, color, glow_color, glow_size=3):
+def render_glow_text(text, font, color, glow_color, glow_size=2):
 	"""
 	Render text with a glow effect.
 	- glow_size: how thick the glow halo is

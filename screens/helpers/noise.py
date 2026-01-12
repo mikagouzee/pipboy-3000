@@ -12,7 +12,7 @@ def create_noise_surface(width, height, intensity=30):
         for x in range(width):
             # random brightness for each pixel
             brightness = random.randint(0, intensity)
-            pixels[x, y] = (brightness, brightness, brightness, 80)
+            pixels[x, y] = (brightness, brightness, brightness, 40)
 
     del pixels
     return surface

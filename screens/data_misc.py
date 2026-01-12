@@ -44,18 +44,21 @@ class MiscScreen(BaseScreen):
 		self.screen.fill(Palette.BG)
 		lines = self.wrap_text(self.current, 40)
 		w, h = self.screen.get_size()
-		y = 40
-
-		backtext = glow_text("< BACK", self.font)
-		self.screen.blit(backtext, (20,20))
 
 		draw_frame(self.screen, (10, 10, w - 20, h - 20))
 		draw_hline(self.screen, 20, 60, w - 40)
 
+		lines = self.wrap_text(self.current, 40)
+
+		line_height = 30
+		total_height = len(lines) * line_height
+		y = (h - total_height) // 2
+
 		for line in lines:
 			text = glow_text(line, self.font)
-			self.screen.blit(text, (20, y))
-			y += 30
+			rect = text.get_rect(center=(w//2, y))
+			self.screen.blit(text, rect)
+			y += line_height
 
 	def wrap_text(self, text, width):
 		words = text.split()

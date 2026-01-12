@@ -28,6 +28,12 @@ class ItemsMenu(BaseScreen):
 			)
 			y+=50
 
+		back_rect = pygame.Rect(10, 10, 120, 50)
+		self.back_button = TouchArea(back_rect, self.go_back, padding=10)
+
+	def go_back(self):
+		self.manager.set("menu")
+
 	def _select(self, label):
 		self.selected = ITEM_CATEGORIES.index(label)
 		self.open_selected()
@@ -39,13 +45,14 @@ class ItemsMenu(BaseScreen):
 			elif event.key == pygame.K_DOWN:
 				self.selected = (self.selected + 1) % len(ITEM_CATEGORIES)
 			elif event.key == pygame.K_BACKSPACE:
-				self.manager.set("menu")
+				self.go_back()
 			elif event.key == pygame.K_RETURN:
 				self.open_selected()
 
 		for btn in self.buttons:
 			btn.handle_event(event)
 
+		self.back_button.handle_event(event)
 
 	def open_selected(self):
 		name = ITEM_CATEGORIES[self.selected].lower()
