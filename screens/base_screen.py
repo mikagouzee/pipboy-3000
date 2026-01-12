@@ -1,5 +1,5 @@
 import pygame
-from .colors import Palette
+from .helpers.colors import Palette
 PIPBOY_BG = (5, 20, 10)	   # dark green-ish
 PIPBOY_FG = (0, 255, 100)	 # bright green
 

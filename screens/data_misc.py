@@ -1,9 +1,9 @@
 import pygame, random, json
-from .base_screen import BaseScreen, PIPBOY_BG, PIPBOY_FG
-from .fonts import load_font
-from .glow_text import glow_text, glow_title
-from .colors import Palette
-from .ui_frame import draw_frame, draw_hline, draw_corner
+from .base_screen import BaseScreen
+from .helpers.fonts import load_font
+from .helpers.glow_text import glow_text, glow_title
+from .helpers.colors import Palette
+from .helpers.ui_frame import draw_frame, draw_hline, draw_corner
 
 class MiscScreen(BaseScreen):
 	def __init__(self, screen, manager):

@@ -1,9 +1,9 @@
 import pygame
-from .base_screen import BaseScreen, PIPBOY_BG, PIPBOY_FG
-from .glow_text import glow_text, glow_title
-from .fonts import load_font
-from .colors import Palette
-from .ui_frame import draw_frame, draw_hline, draw_corner
+from .base_screen import BaseScreen
+from .helpers.glow_text import glow_text, glow_title
+from .helpers.fonts import load_font
+from .helpers.colors import Palette
+from .helpers.ui_frame import draw_frame, draw_hline, draw_corner
 
 ITEM_CATEGORIES = ["AID", "AMMO", "APPAREL", "MISC", "WEAPONS"]
 
@@ -47,7 +47,7 @@ class ItemsMenu(BaseScreen):
 		self.screen.blit(title, (20, 20))
 
 		for i, label in enumerate(ITEM_CATEGORIES):
-			color = PIPBOY_FG if i == self.selected else (0, 150, 60)
+			color = Palette.FG if i == self.selected else (0, 150, 60)
 			text = glow_text(label, self.font)
 			rect = text.get_rect(center=(w // 2, 120 + i * 50))
 			self.screen.blit(text, rect)

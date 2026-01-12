@@ -1,9 +1,9 @@
 import pygame
 from .base_screen import BaseScreen
-from .glow_text import glow_text, glow_title
-from .fonts import load_font
-from .colors import Palette
-from .ui_frame import draw_frame, draw_hline, draw_corner
+from .helpers.glow_text import glow_text, glow_title
+from .helpers.fonts import load_font
+from .helpers.colors import Palette
+from .helpers.ui_frame import draw_frame, draw_hline, draw_corner
 
 MENU_ITEMS = ["STATS", "ITEMS", "DATA"]
 

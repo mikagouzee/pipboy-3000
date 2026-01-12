@@ -1,6 +1,7 @@
 import pygame
-from .base_screen import BaseScreen, PIPBOY_BG
-from .ui_frame import draw_frame, draw_hline, draw_corner
+from .base_screen import BaseScreen
+from .helpers.ui_frame import draw_frame, draw_hline, draw_corner
+from .helpers.colors import Palette
 
 class MapScreen(BaseScreen):
 	def __init__(self, screen, manager):
@@ -18,7 +19,7 @@ class MapScreen(BaseScreen):
 			self.manager.set("data")
 
 	def render(self):
-		self.screen.fill(PIPBOY_BG)
+		self.screen.fill(Palette.BG)
 		w, h = self.screen.get_size()
 		draw_frame(self.screen, (10, 10, w - 20, h - 20))
 		draw_hline(self.screen, 20, 60, w - 40)

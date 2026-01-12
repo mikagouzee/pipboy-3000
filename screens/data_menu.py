@@ -1,9 +1,9 @@
 import pygame
-from .base_screen import BaseScreen, PIPBOY_BG, PIPBOY_FG
-from .fonts import load_font
-from .glow_text import glow_text, glow_title
-from .colors import Palette
-from .ui_frame import draw_frame, draw_hline, draw_corner
+from .base_screen import BaseScreen
+from .helpers.fonts import load_font
+from .helpers.glow_text import glow_text, glow_title
+from .helpers.colors import Palette
+from .helpers.ui_frame import draw_frame, draw_hline, draw_corner
 
 DATA_CATEGORIES = ["MAP", "MISC", "QUESTS", "RADIO"]
 
@@ -38,7 +38,7 @@ class DataMenu(BaseScreen):
 		self.manager.set(f"data_{name}")
 
 	def render(self):
-		self.screen.fill(PipboyPalette.BG)
+		self.screen.fill(Palette.BG)
 		w, h = self.screen.get_size()
 
 		draw_frame(self.screen, (10, 10, w - 20, h - 20))
@@ -48,7 +48,7 @@ class DataMenu(BaseScreen):
 		self.screen.blit(title, (20, 20))
 
 		for i, label in enumerate(DATA_CATEGORIES):
-			color = PIPBOY_FG if i == self.selected else (0, 150, 60)
+			color = Palette.FG if i == self.selected else (0, 150, 60)
 			text = glow_text(label, self.font)
 			rect = text.get_rect(center=(w // 2, 120 + i * 50))
 			self.screen.blit(text, rect)
