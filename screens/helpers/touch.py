@@ -14,6 +14,7 @@ class TouchArea:
         self.padding = padding
         self.debounce_ms = debounce_ms
         self._last_tap = 0
+        self.pulse = 0.0 #0 = no pulse, 1 = full brightness
 
     def _expanded_rect(self):
         return self.rect.inflate(self.padding * 2, self.padding * 2)
@@ -31,5 +32,20 @@ class TouchArea:
                 return  # ignore double taps
 
             self._last_tap = now
+            self.pulse = 1.0
             self.callback()
 
+    def update(self, dt):
+        if self.pulse > 0:
+                self.pulse -= dt * 4
+                if self.pulse < 0:
+                        self.pulse = 0
+
+
+    def draw_pulse(self, surface):
+        if self.pulse > 0:
+                overlay = pygame.Surface(surface.get_size(), pygame.SRCALPHA)
+                alpha = int(self.pulse * 140)
+                overlay.fill((80, 255, 80, alpha))
+                surface.blit(overlay, (0,0))
+                print("Pulse:", self.pulse)

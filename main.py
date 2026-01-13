@@ -1,5 +1,6 @@
 import sys
 import pygame
+import math
 
 from screen_manager import ScreenManager
 from screens.main_menu import MainMenu
@@ -15,6 +16,8 @@ from screens.data_radio import RadioScreen
 
 from screens.helpers.crt import create_scanlines
 from screens.helpers.noise import  create_noise_surface
+from screens.helpers.touch import TouchArea
+
 
 # Set this to your TFT resolution
 SCREEN_WIDTH = 480
@@ -49,9 +52,15 @@ def main():
 	manager.register("data_radio", RadioScreen(screen, manager))
 
 	manager.set("menu")
-
+	
+	flicker_time= 0
+	
 	while running:
 		dt = clock.tick(60) / 1000.0  # seconds
+
+		flicker_time += dt * 1.2
+		flicker_strength = (math.sin(flicker_time) +1) * 0.5
+		flicker_alpha = int(flicker_strength * 180)
 
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
@@ -66,8 +75,22 @@ def main():
 		manager.update(dt)
 		manager.render()
 
+		if hasattr(manager.current, "buttons"):
+			for btn in manager.current.buttons:
+				btn.update(dt)
+				btn.draw_pulse(screen)
+
+		if hasattr(manager.current, "back_button"):
+			manager.current.back_button.update(dt)
+			manager.current.back_button.draw_pulse(screen)
+
+		flicker = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
+		flicker.fill((120,255,120, flicker_alpha))
+		screen.blit(flicker, (0,0))
+	
 		screen.blit(scanlines, (0, 0))
 		screen.blit(noise, (0, 0))
+
 
 		pygame.display.flip()
 

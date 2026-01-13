@@ -14,7 +14,7 @@ class MapScreen(BaseScreen):
 		self.map_img = pygame.image.load("assets/map.png").convert()
 
 		full_rect = pygame.Rect(0, 0, screen.get_width(), screen.get_height())
-		self.back_button = TouchArea(full_rect, self.go_back(), padding=0)
+		self.back_button = TouchArea(full_rect, self.go_back, padding=0)
 
 	def go_back(self):
 		self.manager.set("data")
