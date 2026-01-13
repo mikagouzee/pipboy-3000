@@ -4,14 +4,21 @@ from .helpers.fonts import load_font
 from .helpers.colors import Palette
 from .helpers.glow_text import glow_text, glow_title
 from .helpers.ui_frame import draw_frame, draw_hline, draw_corner
+from .helpers.touch import TouchArea
 
 class QuestsScreen(BaseScreen):
 	def __init__(self, screen, manager):
 		super().__init__(screen)
 		self.manager = manager
 		self.font = load_font(20)
+		
+		back_rect = pygame.Rect(10,10,120,50)
+		self.back_button = TouchArea(back_rect, self.go_back, padding=10)
 
 		self.load()
+
+	def go_back(self):
+		self.manager.set("data")
 
 	def load(self):
 		try:
@@ -27,7 +34,7 @@ class QuestsScreen(BaseScreen):
 	def handle_event(self, event):
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_BACKSPACE:
-				self.manager.set("data")
+				self.go_back()
 			if event.key == pygame.K_RETURN:
 				self.quests.append("New Quest")
 				self.save()
@@ -38,6 +45,8 @@ class QuestsScreen(BaseScreen):
 			if 0 <= index < len(self.quests):
 				del self.quests[index]
 				self.save()
+
+		self.back_button.handle_event(event)
 
 	def render(self):
 		self.screen.fill(Palette.BG)

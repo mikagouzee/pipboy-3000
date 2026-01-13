@@ -31,5 +31,5 @@ class MapScreen(BaseScreen):
 		w, h = self.screen.get_size()
 		draw_frame(self.screen, (10, 10, w - 20, h - 20))
 		draw_hline(self.screen, 20, 60, w - 40)
-
-		self.screen.blit(self.map_img, (0, 0))
+		scaled = pygame.transform.smoothscale(self.map_img, self.screen.get_size())
+		self.screen.blit(scaled, (0,0))

@@ -37,7 +37,7 @@ class TouchArea:
 
     def update(self, dt):
         if self.pulse > 0:
-                self.pulse -= dt * 4
+                self.pulse -= dt * 2
                 if self.pulse < 0:
                         self.pulse = 0
 
@@ -45,7 +45,7 @@ class TouchArea:
     def draw_pulse(self, surface):
         if self.pulse > 0:
                 overlay = pygame.Surface(surface.get_size(), pygame.SRCALPHA)
-                alpha = int(self.pulse * 140)
+                alpha = int(self.pulse * 100)
                 overlay.fill((80, 255, 80, alpha))
                 surface.blit(overlay, (0,0))
                 print("Pulse:", self.pulse)

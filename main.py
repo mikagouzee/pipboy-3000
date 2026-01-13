@@ -18,6 +18,7 @@ from screens.helpers.crt import create_scanlines
 from screens.helpers.noise import  create_noise_surface
 from screens.helpers.touch import TouchArea
 
+from screens.helpers.ui_manager import UIManager
 
 # Set this to your TFT resolution
 SCREEN_WIDTH = 480
@@ -30,8 +31,6 @@ def main():
 	# Fullscreen on Pi: use FULLSCREEN flag; we’ll refine for TFT later
 	screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
 	pygame.display.set_caption("Pip-Boy")
-	scanlines = create_scanlines(SCREEN_WIDTH, SCREEN_HEIGHT)
-	noise = create_noise_surface(SCREEN_WIDTH, SCREEN_HEIGHT, intensity=120)
 
 	clock = pygame.time.Clock()
 	running = True
@@ -52,25 +51,36 @@ def main():
 	manager.register("data_radio", RadioScreen(screen, manager))
 
 	manager.set("menu")
-	
-	flicker_time= 0
-	
+
+	manager.current_main = "MENU"
+	manager.current_sub = None
+
+
+	def get_main_selected():
+		return getattr(manager, "current_main", "MENU").upper()
+
+	def get_sub_selected():
+		return getattr(manager, "current_sub", None)
+
+	def set_sub_selected(v):
+		manager.current_sub = v
+
+
+	ui = UIManager(screen, get_main_selected, get_sub_selected, set_sub_selected)
+
+
+
 	while running:
 		dt = clock.tick(60) / 1000.0  # seconds
-
-		flicker_time += dt * 1.2
-		flicker_strength = (math.sin(flicker_time) +1) * 0.5
-		flicker_alpha = int(flicker_strength * 180)
 
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				running = False
-			elif event.type == pygame.KEYDOWN:
-				# Quick escape during dev (ESC)
-				if event.key == pygame.K_ESCAPE:
+			elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
 					running = False
 
 			manager.handle_event(event)
+			ui.handle_event(event)
 
 		manager.update(dt)
 		manager.render()
@@ -84,14 +94,7 @@ def main():
 			manager.current.back_button.update(dt)
 			manager.current.back_button.draw_pulse(screen)
 
-		flicker = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
-		flicker.fill((120,255,120, flicker_alpha))
-		screen.blit(flicker, (0,0))
-	
-		screen.blit(scanlines, (0, 0))
-		screen.blit(noise, (0, 0))
-
-
+		ui.render(dt)
 		pygame.display.flip()
 
 	pygame.quit()
