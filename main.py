@@ -1,105 +1,111 @@
+# main.py
 import sys
 import pygame
-import math
+import time
 
-from screen_manager import ScreenManager
-from screens.main_menu import MainMenu
-from screens.stats import StatsScreen
-from screens.items_menu import ItemsMenu
-from screens.items_lists import create_item_screens
-
-from screens.data_menu import DataMenu
-from screens.data_map import MapScreen
-from screens.data_misc import MiscScreen
-from screens.data_quests import QuestsScreen
-from screens.data_radio import RadioScreen
-
-from screens.helpers.crt import create_scanlines
-from screens.helpers.noise import  create_noise_surface
-from screens.helpers.touch import TouchArea
-
+from engine import Engine
+from module_manager import ModuleManager
 from screens.helpers.ui_manager import UIManager
 
-# Set this to your TFT resolution
-SCREEN_WIDTH = 480
-SCREEN_HEIGHT = 320
+# Try to import legacy modules (these should exist in your repo)
+try:
+    from pypboy.modules import data as data_mod
+    from pypboy.modules import items as items_mod
+    from pypboy.modules import stats as stats_mod
+except Exception:
+    data_mod = items_mod = stats_mod = None
+
+# Set this to your TFT resolution (override config if needed)
+import config
+SCREEN_WIDTH = getattr(config, "WIDTH", 480)
+SCREEN_HEIGHT = getattr(config, "HEIGHT", 320)
 
 def main():
-	pygame.init()
-	pygame.font.init()
+    pygame.init()
+    pygame.font.init()
 
-	# Fullscreen on Pi: use FULLSCREEN flag; we’ll refine for TFT later
-	screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
-	pygame.display.set_caption("Pip-Boy")
+    # Create engine (this sets up screen and root children)
+    engine = Engine("Pip-Boy", SCREEN_WIDTH, SCREEN_HEIGHT)
 
-	clock = pygame.time.Clock()
-	running = True
+    # If pypboy UI helpers exist, add header/scanlines like legacy init_children
+    try:
+        import pypboy
+        # header and scanlines are added by legacy pypboy init; if not present, skip
+        engine.root_children.add(pypboy.ui.Header())
+        engine.root_children.add(pypboy.ui.Scanlines(SCREEN_WIDTH, SCREEN_HEIGHT, 3, 1, [(0,13,3,50)]))
+    except Exception:
+        pass
 
-	manager = ScreenManager()
-	manager.register("menu", MainMenu(screen, manager))
-	manager.register("stats", StatsScreen(screen, manager))
-	manager.register("items", ItemsMenu(screen, manager))
+    # Module manager wraps engine modules
+    module_manager = ModuleManager(engine)
 
-	item_screens = create_item_screens(screen, manager)
-	for name, scr in item_screens.items():
-		manager.register(name, scr)
+    # Register legacy modules if available (they expect engine/pypboy instance as parent)
+    # These Module classes typically accept the engine/pypboy instance in their constructor.
+    if stats_mod:
+        try:
+            module_manager.register_module("STAT", stats_mod.Module(engine))
+        except Exception:
+            pass
+    if items_mod:
+        try:
+            module_manager.register_module("INV", items_mod.Module(engine))
+        except Exception:
+            pass
+    if data_mod:
+        try:
+            module_manager.register_module("DATA", data_mod.Module(engine))
+        except Exception:
+            pass
 
-	manager.register("data", DataMenu(screen, manager))
-	manager.register("data_map", MapScreen(screen, manager))
-	manager.register("data_misc", MiscScreen(screen, manager))
-	manager.register("data_quests", QuestsScreen(screen, manager))
-	manager.register("data_radio", RadioScreen(screen, manager))
+    # Set a sensible default active module
+    module_manager.set_active("STAT" if "STAT" in engine.modules else next(iter(engine.modules.keys()), None))
 
-	manager.set("menu")
+    # UIManager needs a way to get/set sub selection; we store it on engine for simplicity
+    engine.current_sub = None
 
-	manager.current_main = "MENU"
-	manager.current_sub = None
+    def get_sub_selected():
+        return getattr(engine, "current_sub", None)
 
+    def set_sub_selected(v):
+        engine.current_sub = v
 
-	def get_main_selected():
-		return getattr(manager, "current_main", "MENU").upper()
+    ui = UIManager(engine.screen, module_manager, get_sub_selected, set_sub_selected)
 
-	def get_sub_selected():
-		return getattr(manager, "current_sub", None)
+    clock = pygame.time.Clock()
+    running = True
+    engine.running = True
 
-	def set_sub_selected(v):
-		manager.current_sub = v
+    while running and engine.running:
+        dt = clock.tick(60) / 1000.0
 
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                engine.running = False
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                running = False
+                engine.running = False
 
-	ui = UIManager(screen, get_main_selected, get_sub_selected, set_sub_selected)
+            # route events: engine handles module events; UI handles topbar/subbar taps
+            engine.handle_event(event)
+            ui.handle_event(event)
 
+        # update active module and engine groups
+        # engine.run_once will call active.update and engine.update/render
+        engine.run_once(dt)
 
+        # draw pulses for any TouchAreas that rely on screen-level pulses (if used)
+        # (TouchArea.draw_pulse overlays full-screen tint; we call it from screens if needed)
 
-	while running:
-		dt = clock.tick(60) / 1000.0  # seconds
+        # render UI chrome on top of engine content
+        ui.render(dt)
 
-		for event in pygame.event.get():
-			if event.type == pygame.QUIT:
-				running = False
-			elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-					running = False
+        # flip already done by engine.render(); ensure display updated
+        # pygame.display.flip()  # engine.render already flips
 
-			manager.handle_event(event)
-			ui.handle_event(event)
-
-		manager.update(dt)
-		manager.render()
-
-		if hasattr(manager.current, "buttons"):
-			for btn in manager.current.buttons:
-				btn.update(dt)
-				btn.draw_pulse(screen)
-
-		if hasattr(manager.current, "back_button"):
-			manager.current.back_button.update(dt)
-			manager.current.back_button.draw_pulse(screen)
-
-		ui.render(dt)
-		pygame.display.flip()
-
-	pygame.quit()
-	sys.exit()
+    pygame.quit()
+    sys.exit()
 
 if __name__ == "__main__":
-	main()
+    main()
 
