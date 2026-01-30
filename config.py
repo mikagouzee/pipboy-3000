@@ -42,19 +42,19 @@ GPIO_ACTIONS = {
 
 
 MAP_ICONS = {
-	"camp": 		pygame.image.load('images/map_icons/camp.png'),
-	"factory": 		pygame.image.load('images/map_icons/factory.png'),
-	"metro": 		pygame.image.load('images/map_icons/metro.png'),
-	"misc": 		pygame.image.load('images/map_icons/misc.png'),
-	"monument": 	pygame.image.load('images/map_icons/monument.png'),
-	"vault": 		pygame.image.load('images/map_icons/vault.png'),
-	"settlement": 	pygame.image.load('images/map_icons/settlement.png'),
-	"ruin": 		pygame.image.load('images/map_icons/ruin.png'),
-	"cave": 		pygame.image.load('images/map_icons/cave.png'),
-	"landmark": 	pygame.image.load('images/map_icons/landmark.png'),
-	"city": 		pygame.image.load('images/map_icons/city.png'),
-	"office": 		pygame.image.load('images/map_icons/office.png'),
-	"sewer": 		pygame.image.load('images/map_icons/sewer.png'),
+	"camp": 		pygame.image.load('assets/images/map_icons/camp.png'),
+	"factory": 		pygame.image.load('assets/images/map_icons/factory.png'),
+	"metro": 		pygame.image.load('assets/images/map_icons/metro.png'),
+	"misc": 		pygame.image.load('assets/images/map_icons/misc.png'),
+	"monument": 	pygame.image.load('assets/images/map_icons/monument.png'),
+	"vault": 		pygame.image.load('assets/images/map_icons/vault.png'),
+	"settlement": 	pygame.image.load('assets/images/map_icons/settlement.png'),
+	"ruin": 		pygame.image.load('assets/images/map_icons/ruin.png'),
+	"cave": 		pygame.image.load('assets/images/map_icons/cave.png'),
+	"landmark": 	pygame.image.load('assets/images/map_icons/landmark.png'),
+	"city": 		pygame.image.load('assets/images/map_icons/city.png'),
+	"office": 		pygame.image.load('assets/images/map_icons/office.png'),
+	"sewer": 		pygame.image.load('assets/images/map_icons/sewer.png'),
 }
 
 AMENITIES = {
